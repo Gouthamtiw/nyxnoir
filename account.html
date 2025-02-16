@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nyx Noir - Account</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #000000, #1a1a1a);
+            color: #FAF9F6;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .form-container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(207, 174, 109, 0.4);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            border: 2px solid #FAF9F6;
+            backdrop-filter: blur(10px);
+        }
+        .form-container h2 {
+            margin-bottom: 30px;
+            font-family: 'Playfair Display', serif;
+            color: #CFAE6D;
+            font-size: 2em;
+        }
+        .form-container input {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            box-sizing: border-box;
+            color: #000;
+            transition: all 0.3s ease;
+        }
+        .form-container input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(207, 174, 109, 0.6);
+        }
+        .form-container button {
+            margin-top: 20px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #CFAE6D, #fff);
+            color: #000;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .form-container button:hover {
+            background: linear-gradient(90deg, #fff, #CFAE6D);
+        }
+        .toggle-form {
+            margin-top: 20px;
+            color: #FAF9F6;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9em;
+            transition: color 0.3s;
+        }
+        .toggle-form:hover {
+            color: #CFAE6D;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container" id="formContainer">
+        <h2 id="formTitle">Login</h2>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <div class="toggle-form" onclick="toggleForm()">Don't have an account? Sign Up</div>
+    </div>
+
+    <script>
+        let isLogin = true;
+
+        function toggleForm() {
+            const formTitle = document.getElementById('formTitle');
+            const form = document.getElementById('loginForm');
+            if (isLogin) {
+                formTitle.textContent = 'Sign Up';
+                form.innerHTML = `
+                    <input type="text" id="name" placeholder="Name" required>
+                    <input type="email" id="signupEmail" placeholder="Email" required>
+                    <input type="number" id="age" placeholder="Age" required>
+                    <input type="password" id="signupPassword" placeholder="Password (strong)" required>
+                    <select id="gender" required style="width:100%;padding:15px;margin:15px 0;border-radius:10px;border:none;">
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <button type="submit">Sign Up</button>`;
+                document.querySelector('.toggle-form').textContent = 'Already have an account? Login';
+                isLogin = false;
+            } else {
+                formTitle.textContent = 'Login';
+                form.innerHTML = `
+                    <input type="email" id="email" placeholder="Email" required>
+                    <input type="password" id="password" placeholder="Password" required>
+                    <button type="submit">Login</button>`;
+                document.querySelector('.toggle-form').textContent = "Don't have an account? Sign Up";
+                isLogin = true;
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            if (isLogin) {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const storedUser = JSON.parse(localStorage.getItem(email));
+                if (storedUser && storedUser.password === password) {
+                    alert(`Welcome, ${storedUser.name}! Redirecting to your dashboard...`);
+                    localStorage.setItem('loggedInUser', email);
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert('Invalid credentials. Please try again.');
+                }
+            } else {
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('signupEmail').value;
+                const age = document.getElementById('age').value;
+                const password = document.getElementById('signupPassword').value;
+                const gender = document.getElementById('gender').value;
+                if (name && email && age && password && gender) {
+                    const user = { name, email, age, password, gender };
+                    localStorage.setItem(email, JSON.stringify(user));
+                    alert('Sign up successful! You can now log in.');
+                    toggleForm();
+                } else {
+                    alert('Please fill out all fields.');
+                }
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+    </script>
+</body>
+</html>
